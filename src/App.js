@@ -1,11 +1,16 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
+import Calculator from './Debt-Free-calc';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+       
+       <Calculator />
+       
+       
+        {/* <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
@@ -16,7 +21,7 @@ function App() {
           rel="noopener noreferrer"
         >
           Learn React
-        </a>
+        </a> */}
       </header>
     </div>
   );
