@@ -13,53 +13,85 @@ class Calculator extends React.Component {
       number: '0', 
       payments: [], 
       amountOfPayment: '0', 
-      minDue: '0'
+      minDue: '0',
+      interestAmount: '0',
     };
   }
  
-  
-
-
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
      if (e.target.name === 'debt') {
       this.handleMinPyment()
-     }
+      this.numberOfPayments()
+    }
+    else if (e.target.name === 'interest')
+    this.numberOfPayments()
     
   };
+
+ 
 
   handlePayment = (e) => {
     e.preventDefault();
     const errorId = document.getElementById('message')
     const message = 'You must make atleast the minimum payment!';
     const minDue = this.state.minDue
+   
     const newPayment = {
       number: this.state.number,
       id:Date.now()
     };
-   if (newPayment === minDue) {
-    this.setState((state) => ({
-      payments: [...state.payments, newPayment],
-      number: ''
-    }))
-   }
-   else if (newPayment > minDue) {
-    this.setState((state) => ({
-      payments: [...state.payments, newPayment],
-      number: ''
-    }))
-   }
-   else {
-    errorId.textContent = message;
-    e.preventDefault();
-   }
-   
+  
+    const regMin = (payment, minDue) => {
+      const debtAmount = this.state.debt
+      const interestAmount = this.state.interestAmount
+
+      const subtractPrinciple = () => {
+        return (
+          Math.max(payment - interestAmount).toFixed(2)
+        )
+      }
+        
+      const updatedebt = (debt, payment) => {
+          return (
+          Math.abs(debt - payment).toFixed(2)
+          )    
+        }
+
+        const dividePrinciple = subtractPrinciple()
+
+        const newBal = updatedebt(debtAmount, dividePrinciple)
+
+        if (payment > minDue) {
+         this.setState((state) => ({
+           payments: [...state.payments, newPayment],
+           debt: newBal,
+           number: ''
+         }))
+         this.handleMinPyment()
+         this.numberOfPayments()
+        }
+        else if (payment === minDue) {
+         this.setState((state) => ({
+           payments: [...state.payments, newPayment],
+           debt: newBal,
+           number: ''
+         }))
+         this.handleMinPyment()
+         this.numberOfPayments()
+        }
+        else {
+         errorId.textContent = message;
+         e.preventDefault();
+        }
+      }
+      regMin(newPayment.number, minDue)
 
    
-    this.handleMinPyment()
-  }
+      this.handleMinPyment()
+    }
 
   handleMinPyment = () => {
     const interest = this.state.interest
@@ -74,7 +106,7 @@ class Calculator extends React.Component {
       )
     }
 
-    const parsedInerest = calcInterest()
+    const parsedInterest = calcInterest()
     
     const calcPayment = () =>{
       return (
@@ -83,45 +115,41 @@ class Calculator extends React.Component {
     }
        
     const minPay = calcPayment()
-    const calcMinPay = (debt, interest) => {
-    let debtAmount =  Math.max(debt)
-    let interestRate = Math.max(interest)
-      
-      return (
-       Math.max(debtAmount + interestRate).toFixed(2)
-      )
-    }  
 
-    const minPayment = calcMinPay(minPay, parsedInerest)
+    const calcMinPay = (debt, interest) => {
+      let debtAmount =  Math.max(debt)
+      let interestRate = Math.max(interest)
+        
+        return (
+         Math.max(debtAmount + interestRate).toFixed(2)
+        )
+      } 
+
+    const minPayment = calcMinPay(minPay, parsedInterest)
   
     this.setState((state) => { 
       state.minDue = minPayment
+      state.interestAmount = parsedInterest
     })
   };
 
+  numberOfPayments = () => {
+   const debtAmount = this.state.debt;
+   const minDue = this.state.minDue;
 
+   const divideDebt = (debtAmount, minDue) => {
+    return (
+      Math.round(debtAmount / minDue).toFixed(1)
+    )
+   }
 
-  // handleMinPayment = () => {
-  //   const debtAmount = this.state.debt
-  //   console.log(debtAmount)
+   const amountPayments = divideDebt(debtAmount, minDue)
 
-  //  
-  // }
-
-  // updateMinPayment = () => {
-  //   const debt = this.handleMinPayment()
-  //   const interest = this.handleInterest()
+   this.setState((state) => {
+     state.amountOfPayment = amountPayments
+   })
     
-  //  
-
-  // }
-
-  // requireMin = () => {
-  //   const debtAmount = this.state.debt;
-    
-  // const reqMin = (debtAmount * 0.01)
-  // }
-
+  }
 
   render() {
     return(
@@ -151,14 +179,10 @@ class Calculator extends React.Component {
             <UiOutput balance={this.state.debt} interest={this.state.interest} amountOfPayment={this.state.amountOfPayment} minimalDue={this.state.minDue} />
             <PaymentList payments={this.state.payments} />
           </div>
-        
         </div>
-        
-        
       </div>
     )
   }
-
 }
 
 export default Calculator;
