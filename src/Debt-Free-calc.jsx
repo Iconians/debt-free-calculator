@@ -16,23 +16,63 @@ class Calculator extends React.Component {
       minDue: '0',
       interestAmount: '0',
     };
-  }
+  };
  
   handleChange = (e) => {
+     if (e.target.name === 'debt') {
+      this.edgeCase()
+      this.numberOfPayments()
+    }
+    else if (e.target.name === 'interest') {
+      this.numberOfPayments()  
+    }
     this.setState({
       [e.target.name]: e.target.value,
     });
-     if (e.target.name === 'debt') {
-      this.handleMinPyment()
-      this.numberOfPayments()
-    }
-    else if (e.target.name === 'interest')
-    this.numberOfPayments()
-    
+
   };
 
- 
+ edgeCase = () => {
+  const debt = this.state.debt
+  const interger1 = parseFloat(debt)
+  if (debt ==='100') {
+   this.handleEdgeCase()
+  }
+  else if (interger1 < '100') {
+   this.handleEdgeCase()  
+  }
+  else {
+    this.handleMinPyment()
+  }
+ };
 
+ 
+  handleEdgeCase = () => {
+    const debt = this.state.debt
+   const calcEdgeCaseInterest = () => {
+      return (
+        Math.max(debt * .01).toFixed(2)
+      );
+    };
+
+  const calcEdgeCase = (debt, interest) => {
+    const interger1 = parseFloat(debt)
+    const interger2 = parseFloat(interest)
+    return (
+      Math.abs(interger1 + interger2).toFixed(2)
+    )
+  }
+
+    const calc = calcEdgeCaseInterest()
+
+    const addInterest = calcEdgeCase(debt, calc)
+    
+    this.setState((state) => {
+      state.minDue = addInterest
+    })
+  }
+   
+  
   handlePayment = (e) => {
     e.preventDefault();
     const errorId = document.getElementById('message')
