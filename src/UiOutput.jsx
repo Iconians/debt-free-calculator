@@ -26,8 +26,8 @@ class UiOutput extends React.Component {
         </div>
 
         <div>
-              <h6>Minimum Due</h6>
-              <p>{minimalDue}</p>
+              <h6 style={{marginBottom: '2px'}}>Minimum Due</h6>
+              <p style={{marginTop: '2px'}}>{minimalDue}</p>
             </div>
       </div>
     )

@@ -8,53 +8,47 @@ class Calculator extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      debt: '0', 
-      interest: '9.5', 
-      number: '0', 
+      debt: 0, 
+      interest: 9.5, 
+      paymentAmount: 0, 
       payments: [], 
-      amountOfPayment: '0', 
-      minDue: '0',
-      interestAmount: '0',
+      amountOfPayment: 0, 
+      minDue: 0,
+      interestAmount: 0,
     };
   };
  
   handleChange = (e) => {
      if (e.target.name === 'debt') {
-      this.edgeCase()
+      this.edgeCase(e.target.value)
       this.numberOfPayments()
     }
     else if (e.target.name === 'interest') {
-      this.numberOfPayments()  
+      this.edgeCase(this.state.debt)
+      this.numberOfPayments()
     }
     this.setState({
       [e.target.name]: e.target.value,
     });
-
+    
   };
 
- edgeCase = () => {
-  const debt = this.state.debt
-  const interger1 = parseFloat(debt)
-  if (debt ==='100') {
-   this.handleEdgeCase()
+ edgeCase = (debt) => {
+  const interger1 = parseInt(debt)
+  if (debt === 100) {
+   this.handleEdgeCase(interger1)
   }
-  else if (interger1 < '100') {
-   this.handleEdgeCase()  
+  else if (interger1 < 100) {
+   this.handleEdgeCase(interger1)  
   }
   else {
-    this.handleMinPyment()
+    this.handleMinPayment(interger1)
   }
+  
  };
 
  
-  handleEdgeCase = () => {
-    const debt = this.state.debt
-   const calcEdgeCaseInterest = () => {
-      return (
-        Math.max(debt * .01).toFixed(2)
-      );
-    };
-
+  handleEdgeCase = (debt) => {
   const calcEdgeCase = (debt, interest) => {
     const interger1 = parseFloat(debt)
     const interger2 = parseFloat(interest)
@@ -63,13 +57,11 @@ class Calculator extends React.Component {
     )
   }
 
-    const calc = calcEdgeCaseInterest()
+    const calc =  Math.max(debt * .01).toFixed(2)
 
     const addInterest = calcEdgeCase(debt, calc)
     
-    this.setState((state) => {
-      state.minDue = addInterest
-    })
+    this.setState({minDue: addInterest});
   }
    
   
@@ -78,7 +70,7 @@ class Calculator extends React.Component {
     const errorId = document.getElementById('message')
     const message = 'You must make atleast the minimum payment!';
     const minDue = this.state.minDue
-   
+
     const newPayment = {
       number: this.state.number,
       id:Date.now()
@@ -97,29 +89,29 @@ class Calculator extends React.Component {
       const updatedebt = (debt, payment) => {
           return (
           Math.abs(debt - payment).toFixed(2)
-          )    
+          )  
         }
 
         const dividePrinciple = subtractPrinciple()
 
         const newBal = updatedebt(debtAmount, dividePrinciple)
-
+  
         if (payment > minDue) {
-         this.setState((state) => ({
+          this.setState((state) => ({
            payments: [...state.payments, newPayment],
-           debt: newBal,
-           number: ''
+           debt: parseFloat(newBal),
+           makePayment: 0
          }))
-         this.handleMinPyment()
+         this.handleMinPayment(debtAmount)
          this.numberOfPayments()
         }
         else if (payment === minDue) {
-         this.setState((state) => ({
+          this.setState((state) => ({
            payments: [...state.payments, newPayment],
-           debt: newBal,
-           number: ''
+           debt: parseFloat(newBal),
+           makePayment: 0
          }))
-         this.handleMinPyment()
+         this.handleMinPayment(debtAmount)
          this.numberOfPayments()
         }
         else {
@@ -128,66 +120,63 @@ class Calculator extends React.Component {
         }
       }
       regMin(newPayment.number, minDue)
-
-   
-      this.handleMinPyment()
     }
 
-  handleMinPyment = () => {
-    const interest = this.state.interest
-    const debtAmount = this.state.debt;
-    const transfomInterest = (percent) => {
-      return parseFloat(percent) / 100; 
-    } 
-
-    const calcInterest = () =>{
-      return (
-        Math.max((transfomInterest(interest) / 12 ) * debtAmount).toFixed(2)
-      )
-    }
-
-    const parsedInterest = calcInterest()
-    
-    const calcPayment = () =>{
-      return (
-        Math.max(debtAmount * .01).toFixed(2)
-      )
-    }
-       
-    const minPay = calcPayment()
-
-    const calcMinPay = (debt, interest) => {
-      let debtAmount =  Math.max(debt)
-      let interestRate = Math.max(interest)
-        
-        return (
-         Math.max(debtAmount + interestRate).toFixed(2)
-        )
+    handleMinPayment = (debtAmount) => {
+      const interest = this.state.interest
+  
+      const transfomInterest = (percent) => {
+        return parseFloat(percent) / 100; 
       } 
 
-    const minPayment = calcMinPay(minPay, parsedInterest)
+      const calcInterest = () =>{
+        return (
+          Math.max((transfomInterest(interest) / 12 ) * debtAmount).toFixed(2)
+        )
+      }
+
+      const parsedInterest = calcInterest()
+      
+      const calcPayment = () =>{
+        return (
+          Math.max(debtAmount * .01).toFixed(2)
+        )
+      }
+       
+      const minPay = calcPayment()
   
-    this.setState((state) => { 
-      state.minDue = minPayment
-      state.interestAmount = parsedInterest
-    })
-  };
+      const calcMinPay = (debt, interest) => {
+        let debtAmount =  Math.max(debt)
+        let interestRate = Math.max(interest)
+          
+          return (
+           Math.max(debtAmount + interestRate).toFixed(2)
+          )
+        } 
+  
+      const minPayment = calcMinPay(minPay, parsedInterest)
+    
+      this.setState((state) => { 
+        state.minDue = minPayment
+        state.interestAmount = parsedInterest
+      })
+    };
 
-  numberOfPayments = () => {
-   const debtAmount = this.state.debt;
-   const minDue = this.state.minDue;
-
-   const divideDebt = (debtAmount, minDue) => {
-    return (
-      Math.round(debtAmount / minDue).toFixed(1)
-    )
-   }
-
-   const amountPayments = divideDebt(debtAmount, minDue)
-
-   this.setState((state) => {
-     state.amountOfPayment = amountPayments
-   })
+    numberOfPayments = () => {
+     const debtAmount = this.state.debt;
+     const minDue = this.state.minDue;
+  
+     const divideDebt = (debtAmount, minDue) => {
+      return (
+        Math.abs(debtAmount / minDue).toFixed(0)
+      )
+     }
+  
+     const amountPayments = divideDebt(debtAmount, minDue)
+  
+     this.setState((state) => {
+       state.amountOfPayment = amountPayments
+     })
     
   }
 
@@ -201,23 +190,23 @@ class Calculator extends React.Component {
             <form onSubmit={this.handlePayment}>
              <label htmlFor="debtAmount">Total Debt Amount</label>
              <br />
-             <input style={{marginBottom: '10px'}} onChange={this.handleChange} type="text" name="debt" value={this.state.debt}/>
+             <input style={{marginBottom: '10px'}} placeholder='0' onChange={this.handleChange} type="text" name="debt" value={this.state.debt}/>
              <br />
              <label htmlFor="interest">Interest Rate</label>
              <br />
-             <input style={{marginBottom: '10px'}}  onChange={this.handleChange} type="number" name="interest" value={this.state.interest} />
+             <input style={{marginBottom: '10px'}} placeholder='9.5' onChange={this.handleChange} type="text" name="interest" value={this.state.interest} />
              <br />
              <label htmlFor="payment">make Payment</label>
              <br />
-             <input style={{marginBottom: '10px'}} onChange={this.handleChange} type="number" name="number" value={this.state.number} />
+             <input style={{marginBottom: '10px'}} placeholder='0' onChange={this.handleChange} type="text" name="number" value={this.state.number} />
              <br />
              <button>make payment</button>
              <p id="message"></p>
             </form>
+            <PaymentList payments={this.state.payments} />
           </div>
           <div>
-            <UiOutput balance={this.state.debt} interest={this.state.interest} amountOfPayment={this.state.amountOfPayment} minimalDue={this.state.minDue} />
-            <PaymentList payments={this.state.payments} />
+            <UiOutput balance={this.state.debt} interest={this.state.interest} amountOfPayment={this.state.amountOfPayment} minimalDue={this.state.minDue} />  
           </div>
         </div>
       </div>
