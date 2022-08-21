@@ -52,7 +52,7 @@ class Calculator extends React.Component {
   handleEdgeCase = (debt) => {
   const calcEdgeCase = (debt, interest) => {
     const interger1 = parseFloat(debt)
-    const interger2 = parseInt(interest)
+    const interger2 = parseFloat(interest)
     return (
       Math.abs(interger1 + interger2).toFixed(2)
     )
