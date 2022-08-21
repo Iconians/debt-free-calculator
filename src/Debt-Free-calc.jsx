@@ -9,7 +9,7 @@ class Calculator extends React.Component {
     super(props);
     this.state = { 
       debt: 0, 
-      interest: 9.5, 
+      interest: 9, 
       paymentAmount: 0, 
       payments: [], 
       amountOfPayment: 0, 
@@ -20,11 +20,11 @@ class Calculator extends React.Component {
  
   handleChange = (e) => {
      if (e.target.name === 'debt') {
-      this.edgeCase(e.target.value)
+      this.edgeCase(e.target.value, this.state.interest)
       this.numberOfPayments()
     }
     else if (e.target.name === 'interest') {
-      this.edgeCase(this.state.debt)
+      this.edgeCase(this.state.debt,e.target.value)
       this.numberOfPayments()
     }
     this.setState({
@@ -33,16 +33,17 @@ class Calculator extends React.Component {
     
   };
 
- edgeCase = (debt) => {
+ edgeCase = (debt, interest) => {
   const interger1 = parseInt(debt)
-  if (debt === 100) {
+  const interestAmount = interest
+  if (interger1 === 100) {
    this.handleEdgeCase(interger1)
   }
   else if (interger1 < 100) {
    this.handleEdgeCase(interger1)  
   }
   else {
-    this.handleMinPayment(interger1)
+    this.handleMinPayment(interger1, interestAmount)
   }
   
  };
@@ -51,7 +52,7 @@ class Calculator extends React.Component {
   handleEdgeCase = (debt) => {
   const calcEdgeCase = (debt, interest) => {
     const interger1 = parseFloat(debt)
-    const interger2 = parseFloat(interest)
+    const interger2 = parseInt(interest)
     return (
       Math.abs(interger1 + interger2).toFixed(2)
     )
@@ -76,7 +77,7 @@ class Calculator extends React.Component {
       id:Date.now()
     };
   
-    const regMin = (payment, minDue) => {
+    const reguireMin = (payment, minDue) => {
       const debtAmount = this.state.debt
       const interestAmount = this.state.interestAmount
 
@@ -119,11 +120,11 @@ class Calculator extends React.Component {
          e.preventDefault();
         }
       }
-      regMin(newPayment.number, minDue)
+      reguireMin(newPayment.number, minDue)
     }
 
-    handleMinPayment = (debtAmount) => {
-      const interest = this.state.interest
+    handleMinPayment = (debtAmount, interest) => {
+      const interestAmount = interest
   
       const transfomInterest = (percent) => {
         return parseFloat(percent) / 100; 
@@ -131,7 +132,7 @@ class Calculator extends React.Component {
 
       const calcInterest = () =>{
         return (
-          Math.max((transfomInterest(interest) / 12 ) * debtAmount).toFixed(2)
+          Math.max((transfomInterest(interestAmount) / 12 ) * debtAmount).toFixed(2)
         )
       }
 
