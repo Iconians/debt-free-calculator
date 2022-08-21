@@ -79,6 +79,7 @@ class Calculator extends React.Component {
   
     const reguireMin = (payment, minDue) => {
       const debtAmount = this.state.debt
+      const interest = this.state.interest
       const interestAmount = this.state.interestAmount
 
       const subtractPrinciple = () => {
@@ -103,7 +104,7 @@ class Calculator extends React.Component {
            debt: parseFloat(newBal),
            makePayment: 0
          }))
-         this.handleMinPayment(debtAmount)
+         this.handleMinPayment(debtAmount, interest)
          this.numberOfPayments()
         }
         else if (payment === minDue) {
@@ -112,7 +113,7 @@ class Calculator extends React.Component {
            debt: parseFloat(newBal),
            makePayment: 0
          }))
-         this.handleMinPayment(debtAmount)
+         this.handleMinPayment(debtAmount, interest)
          this.numberOfPayments()
         }
         else {
