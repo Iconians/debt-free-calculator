@@ -10,6 +10,7 @@ class Calculator extends React.Component {
     this.state = { 
       debt: 0, 
       interest: 9, 
+      number: 0,
       paymentAmount: 0, 
       payments: [], 
       amountOfPayment: 0, 
@@ -62,7 +63,7 @@ class Calculator extends React.Component {
 
     const addInterest = calcEdgeCase(debt, calc)
     
-    this.setState({minDue: addInterest});
+    this.setState({minDue: parseFloat(addInterest)});
   }
    
   
@@ -97,7 +98,7 @@ class Calculator extends React.Component {
         const dividePrinciple = subtractPrinciple()
 
         const newBal = updatedebt(debtAmount, dividePrinciple)
-  
+        console.log(minDue)
         if (payment > minDue) {
           errorId.textContent = ''
           this.setState((state) => ({
@@ -105,7 +106,7 @@ class Calculator extends React.Component {
            debt: parseFloat(newBal),
            makePayment: 0
          }))
-         this.handleMinPayment(debtAmount, interest)
+         this.handleMinPayment(newBal, interest)
          this.numberOfPayments()
         }
         else if (payment === minDue) {
@@ -115,7 +116,7 @@ class Calculator extends React.Component {
            debt: parseFloat(newBal),
            makePayment: 0
          }))
-         this.handleMinPayment(debtAmount, interest)
+         this.handleMinPayment(newBal, interest)
          this.numberOfPayments()
         }
         else {
@@ -133,7 +134,7 @@ class Calculator extends React.Component {
         return parseFloat(percent) / 100; 
       } 
 
-      const calcInterest = () =>{
+      const calcInterest = () => {
         return (
           Math.max((transfomInterest(interestAmount) / 12 ) * debtAmount).toFixed(2)
         )
@@ -203,7 +204,7 @@ class Calculator extends React.Component {
                <input style={{marginBottom: '10px'}} id='MinPayInput' placeholder='0' onChange={this.handleChange} type="text" name="number" value={this.state.number} />
                <br />
                <button>make payment</button>
-               <p style={{fontSize: '15px'}} class="valid" id="message" ></p>
+               <p style={{fontSize: '15px'}} className="valid" id="message" ></p>
               </form>
               <PaymentList payments={this.state.payments} />
             </div>
