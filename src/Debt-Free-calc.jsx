@@ -70,7 +70,7 @@ class Calculator extends React.Component {
     e.preventDefault();
     const errorId = document.getElementById('message')
     const message = 'You must make atleast the minimum payment!';
-    const minDue = this.state.minDue
+    const minDue = this.state.minDue;
 
     const newPayment = {
       number: this.state.number,
@@ -99,6 +99,7 @@ class Calculator extends React.Component {
         const newBal = updatedebt(debtAmount, dividePrinciple)
   
         if (payment > minDue) {
+          errorId.textContent = ''
           this.setState((state) => ({
            payments: [...state.payments, newPayment],
            debt: parseFloat(newBal),
@@ -108,6 +109,7 @@ class Calculator extends React.Component {
          this.numberOfPayments()
         }
         else if (payment === minDue) {
+          errorId.textContent = ''
           this.setState((state) => ({
            payments: [...state.payments, newPayment],
            debt: parseFloat(newBal),
@@ -139,12 +141,11 @@ class Calculator extends React.Component {
 
       const parsedInterest = calcInterest()
       
-      const calcPayment = () =>{
-        return (
-          Math.max(debtAmount * .01).toFixed(2)
-        )
-      }
-       
+      const calcPayment = () => {
+      return (
+        Math.max(debtAmount * .01).toFixed(2)
+      )
+    } 
       const minPay = calcPayment()
   
       const calcMinPay = (debt, interest) => {
@@ -179,40 +180,39 @@ class Calculator extends React.Component {
      this.setState((state) => {
        state.amountOfPayment = amountPayments
      })
-    
-  }
+    };
 
-  render() {
-    return(
-     
-     <div>
-        <h1>Debt Free Calculator</h1>
-        <div style={{display: 'flex'}}>
-          <div style={{padding: '40px'}}>
-            <form onSubmit={this.handlePayment}>
-             <label htmlFor="debtAmount">Total Debt Amount</label>
-             <br />
-             <input style={{marginBottom: '10px'}} placeholder='0' onChange={this.handleChange} type="text" name="debt" value={this.state.debt}/>
-             <br />
-             <label htmlFor="interest">Interest Rate</label>
-             <br />
-             <input style={{marginBottom: '10px'}} placeholder='9.5' onChange={this.handleChange} type="text" name="interest" value={this.state.interest} />
-             <br />
-             <label htmlFor="payment">make Payment</label>
-             <br />
-             <input style={{marginBottom: '10px'}} placeholder='0' onChange={this.handleChange} type="text" name="number" value={this.state.number} />
-             <br />
-             <button>make payment</button>
-             <p id="message"></p>
-            </form>
-            <PaymentList payments={this.state.payments} />
-          </div>
-          <div>
-            <UiOutput balance={this.state.debt} interest={this.state.interest} amountOfPayment={this.state.amountOfPayment} minimalDue={this.state.minDue} />  
+    render() {
+      return(
+       
+        <div>
+          <h1>Debt Free Calculator</h1>
+          <div style={{display: 'flex'}}>
+            <div style={{padding: '40px'}}>
+              <form onSubmit={this.handlePayment}>
+               <label htmlFor="debtAmount">Total Debt Amount</label>
+               <br />
+               <input style={{marginBottom: '10px'}} placeholder='0' onChange={this.handleChange} type="text" name="debt" value={this.state.debt}/>
+               <br />
+               <label htmlFor="interest">Interest Rate</label>
+               <br />
+               <input style={{marginBottom: '10px'}} placeholder='9.5' onChange={this.handleChange} type="text" name="interest" value={this.state.interest} />
+               <br />
+               <label htmlFor="payment">make Payment</label>
+               <br />
+               <input style={{marginBottom: '10px'}} id='MinPayInput' placeholder='0' onChange={this.handleChange} type="text" name="number" value={this.state.number} />
+               <br />
+               <button>make payment</button>
+               <p style={{fontSize: '15px'}} class="valid" id="message" ></p>
+              </form>
+              <PaymentList payments={this.state.payments} />
+            </div>
+            <div>
+              <UiOutput balance={this.state.debt} interest={this.state.interest} amountOfPayment={this.state.amountOfPayment} minimalDue={this.state.minDue} />  
+            </div>
           </div>
         </div>
-      </div>
-    )
+      )
   }
 }
 
