@@ -98,7 +98,7 @@ class Calculator extends React.Component {
         const dividePrinciple = subtractPrinciple()
 
         const newBal = updatedebt(debtAmount, dividePrinciple)
-        console.log(minDue)
+
         if (payment > minDue) {
           errorId.textContent = ''
           this.setState((state) => ({
@@ -124,7 +124,28 @@ class Calculator extends React.Component {
          e.preventDefault();
         }
       }
-      reguireMin(newPayment.number, minDue)
+
+      const requireEdgeCaseMin = (payment, minPay) => {
+        if (payment === minPay) {
+          errorId.textContent = ''
+          this.setState((state) => ({
+           payments: [...state.payments, newPayment],
+           debt: 0,
+           makePayment: 0
+         }))
+        }
+        else {
+          errorId.textContent = message;
+          e.preventDefault();
+        }
+      }
+  
+      if (minDue < 102) {
+        requireEdgeCaseMin(parseFloat(newPayment.number), minDue)
+      }
+      else {
+        reguireMin(newPayment.number, minDue)
+      }
     }
 
     handleMinPayment = (debtAmount, interest) => {
