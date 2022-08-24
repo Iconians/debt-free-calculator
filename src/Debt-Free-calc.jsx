@@ -80,10 +80,10 @@ class Calculator extends React.Component {
     if (parseFloat(payment) >= minDue) {
       errorId.textContent = ''
       this.setState((state) => ({
-       payments: [...state.payments, newPayment],
-       debt: parseFloat(newBal),
-       number: '',
-       makePayment: 0
+      payments: [...state.payments, newPayment],
+      debt: parseFloat(newBal),
+      number: '',
+      makePayment: 0
      }))
      this.edgeCase(newBal, interest)
      this.numberOfPayments(newBal, interest)
@@ -116,13 +116,13 @@ class Calculator extends React.Component {
     else if (payment === parseFloat(payOff)) {
       errorId.textContent = ''
       this.setState((state) => ({
-       payments: [...state.payments, newPayment],
-       number: '',
-       debt: 0,
-       makePayment: 0,
-       minDue: 0,
-       amountOfPayment: 0
-     }))
+        payments: [...state.payments, newPayment],
+        number: '',
+        debt: 0,
+        makePayment: 0,
+        minDue: 0,
+        amountOfPayment: 0
+      }))
     }
     else {
       errorId.textContent = errorMessage
@@ -159,12 +159,12 @@ class Calculator extends React.Component {
     if (payment === minPay) {
       errorId.textContent = ''
       this.setState((state) => ({
-       payments: [...state.payments, newPayment],
-       number: '',
-       debt: 0,
-       makePayment: 0,
-       minDue: 0,
-       amountOfPayment: 0
+        payments: [...state.payments, newPayment],
+        number: '',
+        debt: 0,
+        makePayment: 0,
+        minDue: 0,
+        amountOfPayment: 0
      }))
     }
     else if (payment > minPay) {
@@ -175,139 +175,136 @@ class Calculator extends React.Component {
       errorId.textContent = message;
        e.preventDefault();
     }
-    };
+  };
 
-    transfomInterest = (percent) => {
-      return parseFloat(percent) / 100; 
-    }; 
+  transfomInterest = (percent) => {
+    return parseFloat(percent) / 100; 
+  }; 
+  calcInterest = (debtAmount, interestAmount) => {
+    return (
+      Math.max((this.transfomInterest(interestAmount) / 12 ) * debtAmount).toFixed(2)
+    )
+  };
+  calcPayment = (debtAmount) => {
+    return (
+      Math.max(debtAmount * .01).toFixed(2)
+    )
+  };
 
-    calcInterest = (debtAmount, interestAmount) => {
-      return (
-        Math.max((this.transfomInterest(interestAmount) / 12 ) * debtAmount).toFixed(2)
-      )
-    };
+  calcMinPay = (debt, interest) => {
+    let debtAmount =  Math.max(debt)
+    let interestRate = Math.max(interest)       
+    return (
+      Math.max(debtAmount + interestRate).toFixed(2)
+    )
+  }; 
 
-    calcPayment = (debtAmount) => {
-      return (
-        Math.max(debtAmount * .01).toFixed(2)
-      )
-    };
+  handleMinPayment = (debtAmount, interest) => {
+    const interestAmount = interest
+    const parsedInterest = this.calcInterest(debtAmount, interestAmount)  
+    const minPay = this.calcPayment(debtAmount)
+    const minPayment = this.calcMinPay(minPay, parsedInterest)
+    if (isNaN(minPayment)) {
+      this.setState((state) => { 
+        state.minDue = 0
+      })
+    }
+    else {
+      this.setState((state) => { 
+        state.minDue = minPayment
+        state.interestAmount = parsedInterest
+      })
+    }
+  };
 
-    calcMinPay = (debt, interest) => {
-      let debtAmount =  Math.max(debt)
-      let interestRate = Math.max(interest)       
-      return (
+  divideDebt = (debtAmount, minDue) => {
+    return (
+      Math.abs(debtAmount / minDue).toFixed(0)
+    )
+  };
 
-        Math.max(debtAmount + interestRate).toFixed(2)
-      )
-    }; 
+  numberOfPayments = (debt, interest) => {
+    const parsedDebt = parseFloat(debt); 
+    const parsedInterest = this.calcInterest(parsedDebt, interest); 
+    const minPay = this.calcPayment(debt);
+    const minPayment = this.calcMinPay(minPay, parsedInterest);   
+    if (isNaN(parseFloat(minPayment))) {
+      this.setState((state) => {
+        state.amountOfPayment = 0
+      })
+    }
+    else if (parsedDebt <= 100) {
+      this.setState((state) => {
+        state.amountOfPayment = 1
+      })
+    }  
+    else {
+      const amountPayments = this.divideDebt(parsedDebt, minPayment)
+      this.setState((state) => {
+        state.amountOfPayment = amountPayments
+      })
+    }
+  };
 
-    handleMinPayment = (debtAmount, interest) => {
-      const interestAmount = interest
-      const parsedInterest = this.calcInterest(debtAmount, interestAmount)  
-      const minPay = this.calcPayment(debtAmount)
-      const minPayment = this.calcMinPay(minPay, parsedInterest)
-      if (isNaN(minPayment)) {
-        this.setState((state) => { 
-          state.minDue = 0
-        })
-      }
-      else {
-        this.setState((state) => { 
-          state.minDue = minPayment
-          state.interestAmount = parsedInterest
-        })
-      }
-    };
+  render() {
 
-    divideDebt = (debtAmount, minDue) => {
-      return (
-        Math.abs(debtAmount / minDue).toFixed(0)
-      )
-    };
-
-    numberOfPayments = (debt, interest) => {
-      const parsedDebt = parseFloat(debt); 
-      const parsedInterest = this.calcInterest(parsedDebt, interest); 
-      const minPay = this.calcPayment(debt);
-      const minPayment = this.calcMinPay(minPay, parsedInterest);   
-      if (isNaN(parseFloat(minPayment))) {
-        this.setState((state) => {
-          state.amountOfPayment = 0
-        })
-      }
-      else if (parsedDebt <= 100) {
-        this.setState((state) => {
-          state.amountOfPayment = 1
-        })
-      }  
-      else {
-        const amountPayments = this.divideDebt(parsedDebt, minPayment)
-        this.setState((state) => {
-          state.amountOfPayment = amountPayments
-        })
-      }
-    };
-
-    render() {
-
-      const inputs = [
+    const inputs = [
       {
-          label: 'Total Debt Amount',
-          placeholder: '0',
-          name: 'debt'
-        },
-        {
-          label: 'Interest Rate',
-          placeholder: '9.5',
-          name: 'interest'  
-        },
-        {
-          label: 'Make Payment',
-          placeholder: '0',
-          name: 'number',
-          id: 'minPayInput'
-        }
+        label: 'Total Debt Amount',
+        placeholder: '0',
+        name: 'debt'
+      },
+      {
+        label: 'Interest Rate',
+        placeholder: '9.5',
+        name: 'interest'  
+      },
+      {
+        label: 'Make Payment',
+        placeholder: '0',
+        name: 'number',
+        id: 'minPayInput'
+      }
+    ];
 
-      ]
-      return(
-       
-        <div>
-          <h1>Debt Free Calculator</h1>
-          <div style={{display: 'flex'}}>
-            <div style={{padding: '40px'}}>
-              <form onSubmit={this.handlePayment}>
-                {inputs.map(input => {
-                  const {label, placeholder, name} = input
-                  return (
-                  <>
-                    <label htmlFor={name}>{label}</label>
+    return(
+     
+      <div>
+        <h1>Debt Free Calculator</h1>
+        <div style={{display: 'flex'}}>
+          <div style={{padding: '40px'}}>
+            <form onSubmit={this.handlePayment}>
+              {inputs.map(input => {
+                const {label, placeholder, name} = input
+                return (
+                <>
+                  <label htmlFor={name}>{label}</label>
+                  <br />
+                  <input 
+                    style={{marginBottom: '10px'}} 
+                    placeholder={placeholder} 
+                    onChange={this.handleChange} 
+                    type="text" 
+                    name={name}
+                    required 
+                    value={this.state[`${name}`]}/>
                     <br />
-                    <input 
-                      style={{marginBottom: '10px'}} 
-                      placeholder={placeholder} 
-                      onChange={this.handleChange} 
-                      type="text" 
-                      name={name}
-                      required 
-                      value={this.state[`${name}`]}/>
-                      <br />
-                  </> 
-                )})}
-               <button>make payment</button>
-               <p style={{fontSize: '15px'}} className="valid" id="message" ></p>
-              </form>
-              <PaymentList payments={this.state.payments} />
-            </div>
-            <div>
-              <UiOutput balance={this.state.debt} 
-              interest={this.state.interest} 
-              amountOfPayment={this.state.amountOfPayment} 
-              minimalDue={this.state.minDue} />  
-            </div>
+                </> 
+              )})}
+             <button>make payment</button>
+             <p style={{fontSize: '15px'}} className="valid" id="message" ></p>
+            </form>
+            <PaymentList payments={this.state.payments} />
+          </div>
+          <div>
+            <UiOutput balance={this.state.debt} 
+            interest={this.state.interest} 
+            amountOfPayment={this.state.amountOfPayment} 
+            minimalDue={this.state.minDue} />  
           </div>
         </div>
-      )
+      </div>
+    )
   };
 };
 
