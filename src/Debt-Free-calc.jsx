@@ -263,7 +263,6 @@ class Calculator extends React.Component {
         label: 'Make Payment',
         placeholder: '0',
         name: 'number',
-        id: 'minPayInput'
       }
     ];
 
